@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>PRODUCT STORE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+            <style>
+                body {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsexC4OGuRdnPqjl3UNXZmsOwrZQ8SxNImm0aN9zvz_2Z1Nl_tl3PzdAOaZtMTYWPTAsA&usqp=CAU'); /* Replace 'background.jpg' with your image file */
+            /* Other CSS properties */
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 90vh;
+        }
+        .col-4{
+        padding:20px;
+        }
+        .custom-purple-background {
+    background-color: #FFB6C1; /* Adjust the shade of purple as needed */
+    /* You can also add more specific styles here if required */
+}
+
+.modal-title {
+    width: 100%;
+    text-align: center;
+}
+            </style>
+</head>
+<body>
+
+
+<div class="container">
+    <div th:replace="navigation::header"></div>
+    <h3>WELCOME<span sec:authentication="principal.username"></span></h3>
+    <h3>AUTHORITY<span sec:authentication="principal.authorities"></span></h3>
+    <div class="row mb-5">
+            <div class="col-4">
+                <a sec:authorize="hasRole('ADMIN')" href="get-book-form"><button class="btn btn-info">ADD BOOK</button></a>
+            </div>
+
+        <div class="col-4">
+            <form method="get" th:action="@{/search}">
+                <input type="search" th:value="${name}" name="name"/>
+                <button type="submit" class="btn btn-secondary">Search</button>
+            </form>
+        </div>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>BOOK ID</th>
+                <th>BOOK NAME</th>
+<!--                <th>BOOK PRICE</th>-->
+                <th>BOOK PUBLICATION</th>
+                <th>BOOK AUTHOR</th>
+                <th>BOOK PRICE</th>
+                <th>ACTIONS</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="book:${books}">
+                <td th:text="${book.bookId}"></td>
+                <td th:text="${book.bookName}"></td>
+<!--                <td th:text="${book.bookPrice}"></td>-->
+                <td th:text="${book.bookPublication}"></td>
+                <td th:text="${book.bookAuthor}"></td>
+                <td th:text="${book.bookPrice}"></td>
+                <td>
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/update/{id}(id=${book.bookId})}"><button class="btn btn-warning">UPDATE</button></a>
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/delete/{id}(id=${book.bookId})}"><button class="btn btn-danger">DELETE</button></a>
+
+                    <button type="button" class="btn btn-success" id="view" data-bs-toggle="modal" th:data-bs-target="|#userModal${book.bookId}|">
+                        View
+                    </button>
+
+                    <div class="modal fade" th:id="|userModal${book.bookId}|" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content custom-purple-background">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">BOOK INFORMATION</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Your book information content -->
+                                    <b>Book Id:</b> <span th:text="${book.bookId}"></span></br>
+                                                                        <b>Book Name:</b> <span th:text="${book.bookName}"></span></br>
+                                    <!--                                    <b>Event Type:</b> <span th:text="${book.bookPrice}"></span></br>-->
+                                                                        <b>Book Publication:</b> <span th:text="${book.bookPublication}"></span></br>
+                                                                        <b>Book Author:</b> <span th:text="${book.bookAuthor}"></span></br>
+                                                                        <b>Book Price:</b> <span th:text="${book.bookPrice}"></span></br>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>
